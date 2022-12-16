@@ -12,7 +12,7 @@ public abstract class Common {
     public void setUp() {
         // Создаем экземпляр WebDriver
         webDriver = new ChromeDriver();
-        baseUrl = "http://checker.jettycloud.com/";
+        baseUrl = "http://checker.jettycloud.com";
     }
 
     @AfterTest
