@@ -6,7 +6,8 @@ import pages.ErrorPage;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-public class FirstTest {
+public class FirstTest extends Common {
+
     @Test
     public void getErrorPage() throws Exception {
         // Создаем экземпляр WebDriver
