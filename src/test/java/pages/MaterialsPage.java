@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class MaterialsPage {
     By tabs = By.className("ant-tabs-tab-btn");
@@ -13,6 +14,7 @@ public class MaterialsPage {
     By checkBoxBox = By.className("ant-checkbox");
     By button = By.className("ant-btn");
     private final WebDriver driver;
+    private final Logger logger = Logger.getLogger(MaterialsPage.class.getName());
 
     public MaterialsPage(WebDriver driver) {
         this.driver = driver;
@@ -38,7 +40,7 @@ public class MaterialsPage {
     public WebElement checkCkeckBox() {
         WebElement chBox = getCkeckBoxBox();
         chBox.click();
-        System.out.println(chBox.isSelected());
+        logger.info("Is checkbox selected" + chBox.isSelected());
         return chBox;
     }
 

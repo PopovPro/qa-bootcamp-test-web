@@ -1,6 +1,9 @@
 import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import pages.ErrorPage;
@@ -20,21 +23,24 @@ public class FirstTest extends Common {
     @Test
     public void checkErrorPage() throws Exception {
         // Создаем экземпляр WebDriver
-        webDriver.get(baseUrl);
+        WebDriver driver = new ChromeDriver();
+        driver.get("http://checker.jettycloud.com");
         // Находим элемент по названию класса
-
-        String title = webDriver.getTitle();
+        String title = driver.getTitle();
         logger.info("Page title is: " + title);
         assertEquals(title, "DINS QA Boot Camp check tool");
-        String errorCode = webDriver.findElement(By.className("ant-result-title")).getText();
+        String errorCode = driver.findElement(By.className("ant-result-title")).getText();
         assertEquals(errorCode, "404");
-        String errorText = webDriver.findElement(By.className("ant-result-subtitle")).getText();
+        String errorText = driver.findElement(By.className("ant-result-subtitle")).getText();
         assertEquals(errorText, "Стринца не найдена");
         // Закрываем браузер
+        driver.close();
     }
 
     @Test
     public void checkErrorPageWithPageObject() throws Exception {
+
+        //используем общий метод из класса Common для создания драйвера
         webDriver.get(baseUrl);
         String title = webDriver.getTitle();
         logger.info("Page title is: " + title);
@@ -51,14 +57,14 @@ public class FirstTest extends Common {
 
         String[] tabsNames = {"JAVA", "SQL", "Клиент-серверная архитектура"};
         List<String> expectedTabs = Arrays.asList(tabsNames);
-        System.out.println("Tabs should be: " + expectedTabs);
+        logger.info("Tabs should be: " + expectedTabs);
 
         String title = webDriver.getTitle();
-        System.out.println("Page title is: " + title);
+        logger.info("Page title is: " + title);
         assertEquals(title, "DINS QA Boot Camp check tool");
         MaterialsPage materialsPage = new MaterialsPage(webDriver);
         List<String> actualTabs = materialsPage.getTabsNames();
-        System.out.println("Actual tab names are: " + actualTabs);
+        logger.info("Actual tab names are: " + actualTabs);
 
         AtomicInteger i = new AtomicInteger();
         actualTabs.forEach(tab -> {
@@ -67,9 +73,9 @@ public class FirstTest extends Common {
 
         String checkBox = materialsPage.getCheckBoxText();
         assertEquals(checkBox, "Я ознакомился(лась) с правилами");
-        System.out.println(checkBox);
+        logger.info(checkBox);
         String button = materialsPage.getButtonText();
-        System.out.println(button);
+        logger.info(button);
         assertEquals(button, "Перейти к тестированию");
     }
 
@@ -91,7 +97,7 @@ public class FirstTest extends Common {
         materialsPage.pressButton();
         Thread.sleep(1000);
         String resultText = warningPage.getResultText();
-        System.out.println(resultText);
+        logger.info(resultText);
         assertEquals("Вы не можете пройти тест! Пожалуйста, напишите в поддержку, если вы считаете , что это ошибка.", resultText);
     }
 }
