@@ -1,5 +1,6 @@
 package pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -12,9 +13,11 @@ public class ErrorPage {
         this.driver = driver;
     }
 
+    @Step("Get error code text")
     public String getErrorCode() {
         return driver.findElement(errorCode).getText();
     }
+    @Step ("Get error text")
     public String getErrorText() {
         return driver.findElement(errorText).getText();
     }

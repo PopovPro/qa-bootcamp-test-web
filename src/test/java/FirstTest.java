@@ -1,43 +1,42 @@
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import jdk.jfr.Description;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import pages.ErrorPage;
 import pages.MaterialsPage;
 import pages.WarningPage;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.testng.AssertJUnit.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class FirstTest extends Common {
 
     private final Logger logger = Logger.getLogger(FirstTest.class.getName());
 
-    @Test
+    @Test(priority = 0, description = "Нет доступа к материалам при переходе по ссылке без UID")
+    @Description("Описание: При переходе по доменному имени пользователь видит страницу ошибки")
     public void checkErrorPage() throws Exception {
-        // Создаем экземпляр WebDriver
-        WebDriver driver = new ChromeDriver();
-        driver.get("http://checker.jettycloud.com");
+
+        webDriver.get(baseUrl);
         // Находим элемент по названию класса
-        String title = driver.getTitle();
+
+        String title = webDriver.getTitle();
         logger.info("Page title is: " + title);
         assertEquals(title, "DINS QA Boot Camp check tool");
-        String errorCode = driver.findElement(By.className("ant-result-title")).getText();
+        String errorCode = webDriver.findElement(By.className("ant-result-title")).getText();
         assertEquals(errorCode, "404");
-        String errorText = driver.findElement(By.className("ant-result-subtitle")).getText();
+        String errorText = webDriver.findElement(By.className("ant-result-subtitle")).getText();
         assertEquals(errorText, "Стринца не найдена");
-        // Закрываем браузер
-        driver.close();
     }
 
-    @Test
+    @Test(priority = 0, description = "Нет доступа к материалам при переходе по ссылке без UID. Используем Page Object")
+    @Description("Описание: При переходе по доменному имени пользователь видит страницу ошибки")
     public void checkErrorPageWithPageObject() throws Exception {
 
         //используем общий метод из класса Common для создания драйвера
@@ -51,7 +50,9 @@ public class FirstTest extends Common {
         String errorText = errorPage.getErrorText();
         assertEquals(errorText, "Стринца не найдена");
     }
-    @Test
+
+    @Test(priority = 0, description = "К тестирования нельзя перейти без согласия с правилами (нажать на чекбокс)")
+    @Description("Описание: Проверка того, что только при согласии с правилами и нажатии чекбокс доступна кнопка 'Перейти к тесту'")
     public void checkMaterialsPage() throws Exception {
         webDriver.get(baseUrl.concat("/123"));
 
@@ -79,7 +80,8 @@ public class FirstTest extends Common {
         assertEquals(button, "Перейти к тестированию");
     }
 
-    @Test
+    @Test(priority = 0, description = "Нет доступа к материалам при переходе к тесту с несуществующим в базе UID")
+    @Description("Описание: Пользователь, даже с корретным айди, но не существующим в базе не может перейти к тестированию")
     public void noAccessForUserWithNonExistingUid() throws Exception {
         // 1. Go to materials page with non-exisitnd UID
         webDriver.get(baseUrl.concat("/123"));
@@ -89,7 +91,7 @@ public class FirstTest extends Common {
         assertFalse(materialsPage.isButtonActive());
 
         // 2. Scroll the page and check checkbox
-        WebElement checkBox = materialsPage.checkCkeckBox();
+        WebElement checkBox = materialsPage.checkCheckBox();
         //assertEquals(true, checkBox.isSelected());
         assertTrue(materialsPage.isButtonActive());
 

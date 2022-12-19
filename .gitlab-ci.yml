@@ -1,0 +1,33 @@
+stages:
+  - test
+
+test and report:
+  stage: test
+  image: selenium/standalone-chrome:108.0-chromedriver-108.0-20221217
+  variables:
+    JAVA_OPTS: '-Dwebdriver.chrome.whitelistedIps='
+  before_script:
+    - sudo apt update
+    - sudo wget https://download.oracle.com/java/19/latest/jdk-19_linux-x64_bin.deb
+    - sudo apt-get -qqy install ./jdk-19_linux-x64_bin.deb
+    - sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-19/bin/java 1919
+    - sudo wget https://mirrors.estointernet.in/apache/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz
+    - sudo tar -xvf apache-maven-3.8.5-bin.tar.gz
+    - sudo mv apache-maven-3.8.5 /opt/
+    - sudo ln -s /opt/apache-maven-3.8.5/bin/mvn /usr/bin/mvn
+    - sudo apt install -y allure
+  script:
+    - sudo mvn clean install
+    - sudo mvn clean test
+    - sudo mvn allure:report
+    - sudo mkdir public
+    - sudo mv target/site/allure-maven-plugin/* public
+  tags:
+    - docker
+    - qa
+  artifacts:
+     when: always
+     paths:
+       - public
+     expire_in: 1 week
+

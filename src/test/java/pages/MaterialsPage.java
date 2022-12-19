@@ -1,5 +1,6 @@
 package pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,25 +21,31 @@ public class MaterialsPage {
         this.driver = driver;
     }
 
+    @Step ("Get list of tabs")
     public List<String> getTabsNames() {
         List<WebElement> elements = driver.findElements(tabs);
-        List<String> tabsList = new ArrayList<String>();
+        List<String> tabsList = new ArrayList<>();
         elements.forEach(element -> tabsList.add(element.getText()));
         return tabsList;
     }
+    @Step ("Get checkbox text")
     public String getCheckBoxText() {
         return driver.findElement(checkBox).getText();
     }
 
+    @Step ("Get button text")
     public String getButtonText() {
         return driver.findElement(button).getText();
     }
 
-    public WebElement getCkeckBoxBox() {
+    @Step ("Get checkbox element")
+    public WebElement getCheckBoxBox() {
         return driver.findElement(checkBoxBox);
     }
-    public WebElement checkCkeckBox() {
-        WebElement chBox = getCkeckBoxBox();
+
+    @Step ("Verify is checkbox checked")
+    public WebElement checkCheckBox() {
+        WebElement chBox = getCheckBoxBox();
         chBox.click();
         logger.info("Is checkbox selected" + chBox.isSelected());
         return chBox;
