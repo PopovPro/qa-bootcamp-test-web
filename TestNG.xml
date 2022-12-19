@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="QaBootCampTestWeb">
+    <test name="QaBootCampTestWeb" preserve-order="true" thread-count="1" parallel="methods">
+        <classes>
+            <class name="FirstTest"/>
+        </classes>
+    </test>
+</suite>
