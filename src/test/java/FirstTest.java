@@ -1,5 +1,9 @@
 import java.util.logging.Logger;
 
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -8,12 +12,14 @@ import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import pages.ErrorPage;
 import pages.MaterialsPage;
+import pages.QuestionsPage;
 import pages.WarningPage;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.testng.AssertJUnit.*;
 
 public class FirstTest extends Common {
@@ -67,9 +73,7 @@ public class FirstTest extends Common {
         logger.info("Actual tab names are: " + actualTabs);
 
         AtomicInteger i = new AtomicInteger();
-        actualTabs.forEach(tab -> {
-            assertEquals(tab, expectedTabs.get(i.getAndIncrement()));
-        });
+        actualTabs.forEach(tab -> assertEquals(tab, expectedTabs.get(i.getAndIncrement())));
 
         String checkBox = materialsPage.getCheckBoxText();
         assertEquals(checkBox, "Я ознакомился(лась) с правилами");
@@ -99,5 +103,106 @@ public class FirstTest extends Common {
         String resultText = warningPage.getResultText();
         logger.info(resultText);
         assertEquals("Вы не можете пройти тест! Пожалуйста, напишите в поддержку, если вы считаете , что это ошибка.", resultText);
+    }
+    @Test
+    public void checkQuestionsForUserWithExistingUid() throws Exception {
+        // Create new user
+        String userUid = UserApi.createUser();
+
+        // Go to test page with user uid
+        WebDriver driver = new ChromeDriver();
+        driver.get(baseUrl.concat("/task/" + userUid));
+        QuestionsPage questionsPage = new QuestionsPage(driver);
+        //Thread.sleep(2000); //In case page load time is too big
+
+        // Check first page
+        assertEquals("Алексей Навальный", questionsPage.getUserName());
+        assertTrue(questionsPage.getTimeLeft().contains("Time left"));
+        assertTrue(questionsPage.timeChange());
+        int stepsAmount = questionsPage.getAllStepsAmount();
+        assertEquals(25, stepsAmount);
+        logger.info("Total number of questions: " + stepsAmount);
+        int activeQuestion = 1;
+        assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+        logger.info("Active question: " + activeQuestion);
+        assertEquals(24, questionsPage.getInactiveStepsAmount());
+        assertEquals("Примером стека из жизни может быть:", questionsPage.getQuestionTitle());
+        assertEquals(4, questionsPage.checkQuestionsAmountAndText());
+        assertEquals("Следующий вопрос", questionsPage.getButtonText());
+        assertFalse(questionsPage.isButtonActive());
+        assertTrue(questionsPage.checkPageTitleAfterBtnClick());
+        questionsPage.pickRandomAnswer();
+        assertTrue(questionsPage.isButtonActive());
+        questionsPage.clickNextQuestionBtn();
+
+        //Check other pages
+        while (activeQuestion < stepsAmount) {
+            activeQuestion++;
+            switch(activeQuestion) {
+                case 19:
+                    assertTrue(questionsPage.previousQuestionsChecked());
+                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+                    logger.info("Active question: " + activeQuestion);
+                    assertFalse(questionsPage.isButtonActive());
+                    questionsPage.sendInt();
+                    assertTrue(questionsPage.isButtonActive());
+                    questionsPage.clickNextQuestionBtn();
+                    break;
+                case 22:
+                case 23:
+                    assertTrue(questionsPage.previousQuestionsChecked());
+                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+                    logger.info("Active question: " + activeQuestion);
+                    assertFalse(questionsPage.isButtonActive());
+                    questionsPage.sendSql();
+                    assertTrue(questionsPage.isButtonActive());
+                    questionsPage.clickNextQuestionBtn();
+                    break;
+                case 24:
+                    assertTrue(questionsPage.previousQuestionsChecked());
+                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+                    logger.info("Active question: " + activeQuestion);
+                    assertFalse(questionsPage.isButtonActive());
+                    questionsPage.sendJavaCode();
+                    assertTrue(questionsPage.isButtonActive());
+                    questionsPage.clickNextQuestionBtn();
+                    break;
+                case 25:
+                    assertTrue(questionsPage.previousQuestionsChecked());
+                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+                    logger.info("Active question: " + activeQuestion);
+                    assertEquals("Завершить тест", questionsPage.getFinishButtonText());
+                    //assertFalse(questionsPage.isFinishButtonActive());
+                    questionsPage.sendJavaCode();
+                    assertTrue(questionsPage.isButtonActive());
+                    questionsPage.finishTest();
+                    break;
+                default:
+                    assertTrue(questionsPage.previousQuestionsChecked());
+                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+                    logger.info("Active question: " + activeQuestion);
+                    assertFalse(questionsPage.isButtonActive());
+                    questionsPage.pickRandomAnswer();
+                    assertTrue(questionsPage.isButtonActive());
+                    questionsPage.clickNextQuestionBtn();
+            }
+        }
+
+        // Check test's final page
+        assertEquals("http://checker.jettycloud.com/complete", questionsPage.checkURL());
+        assertTrue(questionsPage.checkFinishedTestImg());
+        assertEquals("Задание успешно отправлено! Мы дадим обратную связь до 13-го марта 2022г. Если обратная связь тебе не пришла, или у тебя возникли вопросы, пиши нам на почту.", questionsPage.finishedText());
+        assertEquals("bootcamp@dins.ru", questionsPage.emailButtonText());
+
+        //Close browser
+        driver.close();
+
+        //Check db
+        /*
+        MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://checker.jettycloud.com:9091"));
+        DB database = mongoClient.getDB("{DB_DATABASE}");
+        DBCollection results = database.getCollection("result");
+        Object user = results.find({"uid": userUid});
+         */
     }
 }
