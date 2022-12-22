@@ -148,15 +148,4 @@ public class QuestionsPage {
         driver.findElement(codeField).sendKeys(javaCode);
     }
 
-    public String getFinishButtonText() {
-        return driver.findElement(finishButton).getText();
-    }
-
-    public boolean isFinishButtonActive(){
-        return driver.findElement(finishButton).isEnabled();
-    }
-    public void finishTest() {
-        driver.findElement(finishButton).click();
-    }
-
 }

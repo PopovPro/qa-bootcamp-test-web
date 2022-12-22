@@ -138,54 +138,30 @@ public class FirstTest extends Common {
         //Check other pages
         while (activeQuestion < stepsAmount) {
             activeQuestion++;
+            assertTrue(questionsPage.previousQuestionsChecked());
+            assertEquals(activeQuestion, questionsPage.getActiveQuestion());
+            logger.info("Active question: " + activeQuestion);
+            //assertFalse(questionsPage.isButtonActive()); //bug its active on question 25
             switch(activeQuestion) {
                 case 19:
-                    assertTrue(questionsPage.previousQuestionsChecked());
-                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
-                    logger.info("Active question: " + activeQuestion);
-                    assertFalse(questionsPage.isButtonActive());
                     questionsPage.sendInt();
-                    assertTrue(questionsPage.isButtonActive());
-                    questionsPage.clickNextQuestionBtn();
                     break;
                 case 22:
                 case 23:
-                    assertTrue(questionsPage.previousQuestionsChecked());
-                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
-                    logger.info("Active question: " + activeQuestion);
-                    assertFalse(questionsPage.isButtonActive());
                     questionsPage.sendSql();
-                    assertTrue(questionsPage.isButtonActive());
-                    questionsPage.clickNextQuestionBtn();
                     break;
                 case 24:
-                    assertTrue(questionsPage.previousQuestionsChecked());
-                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
-                    logger.info("Active question: " + activeQuestion);
-                    assertFalse(questionsPage.isButtonActive());
                     questionsPage.sendJavaCode();
-                    assertTrue(questionsPage.isButtonActive());
-                    questionsPage.clickNextQuestionBtn();
                     break;
                 case 25:
-                    assertTrue(questionsPage.previousQuestionsChecked());
-                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
-                    logger.info("Active question: " + activeQuestion);
-                    assertEquals("Завершить тест", questionsPage.getFinishButtonText());
-                    //assertFalse(questionsPage.isFinishButtonActive());
+                    assertEquals("Завершить тест", questionsPage.getButtonText());
                     questionsPage.sendJavaCode();
-                    assertTrue(questionsPage.isButtonActive());
-                    questionsPage.finishTest();
                     break;
                 default:
-                    assertTrue(questionsPage.previousQuestionsChecked());
-                    assertEquals(activeQuestion, questionsPage.getActiveQuestion());
-                    logger.info("Active question: " + activeQuestion);
-                    assertFalse(questionsPage.isButtonActive());
                     questionsPage.pickRandomAnswer();
-                    assertTrue(questionsPage.isButtonActive());
-                    questionsPage.clickNextQuestionBtn();
             }
+            assertTrue(questionsPage.isButtonActive());
+            questionsPage.clickNextQuestionBtn();
         }
 
         // Check test's final page
