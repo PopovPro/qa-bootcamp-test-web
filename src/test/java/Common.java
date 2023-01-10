@@ -1,34 +1,45 @@
-import config.Config;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import io.restassured.RestAssured;
+import io.restassured.http.Cookies;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
+
 import java.io.IOException;
+import java.util.Properties;
 
-public abstract class Common {
+public class Common {
 
+    public Common() {
+        Properties prop = new Properties();
+        try {
+            prop.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
+
+            RestAssured.baseURI = prop.getProperty("api.uri");
+            RestAssured.port = Integer.parseInt(prop.getProperty("api.port"));
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static Cookies getAuthCookies() {
+        return RestAssured
+                .given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("username", "Rx8TMYPgz@ZUzb")
+                .formParam("password", "64MX9j?csngTQv")
+                .when()
+                .post("/login")
+                .getDetailedCookies();
+    }
     WebDriver webDriver;
     String baseUrl;
 
     @BeforeTest
     public void setUp() {
-        //Чтобы вычитать настройки из конфига
-        ChromeOptions options = new ChromeOptions();
-        Config config;
-        {
-            try {
-                config = new Config();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        //Добаввляем опции для драйвера, чтобы запускать headless
-        options.setHeadless(config.getIsHeadless());
         // Создаем экземпляр WebDriver
-        webDriver = new ChromeDriver(options);
-        baseUrl = config.getBaseUrl();
+        webDriver = new ChromeDriver();
+        baseUrl = "http://checker.jettycloud.com";
     }
 
     @AfterTest
