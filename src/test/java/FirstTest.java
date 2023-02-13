@@ -116,7 +116,7 @@ public class FirstTest extends Common {
         //Thread.sleep(2000); //In case page load time is too big
 
         // Check first page
-        assertEquals("Алексей Навальный", questionsPage.getUserName());
+        assertEquals("Джон Сноу", questionsPage.getUserName());
         assertTrue(questionsPage.getTimeLeft().contains("Time left"));
         assertTrue(questionsPage.timeChange());
         int stepsAmount = questionsPage.getAllStepsAmount();
